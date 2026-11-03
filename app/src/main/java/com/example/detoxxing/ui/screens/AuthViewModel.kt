@@ -20,7 +20,6 @@ data class EmailLookup(val email: String? = null)
 
 class AuthViewModel : ViewModel() {
 
-    // Состояния для UI
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -49,11 +48,11 @@ class AuthViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Регистрация в Supabase
+
                 supabase.auth.signUpWith(Email) {
                     this.email = email
                     this.password = password
-                    // Передаем username в метаданные, чтобы сработал триггер в базе
+
                     this.data = kotlinx.serialization.json.buildJsonObject {
                         put("username", username)
                     }
@@ -86,7 +85,7 @@ class AuthViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // 1. Ищем email по нику
+
                 val userRecord = supabase.from("user")
                     .select(columns = Columns.list("email")) {
                         filter { eq("username", username) }
@@ -99,25 +98,24 @@ class AuthViewModel : ViewModel() {
                     return@launch
                 }
 
-                // 2. Входим
+
                 supabase.auth.signInWith(Email) {
                     this.email = userRecord.email
                     this.password = password
                 }
 
-                _loginSuccess.value = true // Даем сигнал экрану, что можно переходить
+                _loginSuccess.value = true
 
             } catch (e: Exception) {
                 val errorText = e.message ?: ""
 
-                // Переводим технические ошибки Supabase на человеческий язык
                 _errorMessage.value = when {
                     errorText.contains("invalid_credentials") -> "Неверный логин или пароль"
                     errorText.contains("user_already_exists") -> "Этот email уже зарегистрирован"
                     errorText.contains("weak_password") -> "Пароль слишком короткий (минимум 6 символов)"
                     errorText.contains("Email not confirmed") -> "Пожалуйста, подтвердите вашу почту"
                     errorText.contains("network") || errorText.contains("timeout") -> "Ошибка сети. Проверьте интернет"
-                    else -> "Ошибка входа. Попробуйте позже" // Для всех остальных случаев
+                    else -> "Ошибка входа. Попробуйте позже"
                 }
 
             } finally {
@@ -126,7 +124,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // Очистка ошибки (например, когда юзер начинает печатать заново)
+
     fun clearError() {
         _errorMessage.value = null
     }

@@ -52,7 +52,7 @@ fun MainScreen(username: String, mainNavController: NavController) {
     ) { paddingValues ->
         Modifier.padding(paddingValues)
 
-        // Переключаем экраны в зависимости от выбранной вкладки
+
         when (selectedTab) {
             0 -> DashboardScreen(username = username, navController = mainNavController)
             1 -> ProfileScreen(username = username, navController = mainNavController)

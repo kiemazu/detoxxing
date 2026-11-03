@@ -42,7 +42,7 @@ fun DashboardScreen(
 
         Spacer(Modifier.weight(1f))
 
-        // Красивый круг с таймером
+
         Box(
             modifier = Modifier
                 .size(250.dp)
@@ -86,7 +86,7 @@ fun DashboardScreen(
     }
 }
 
-// Функция для перевода секунд в формат 00:00:00
+
 fun formatTime(totalSeconds: Int): String {
     val hours = totalSeconds / 3600
     val minutes = (totalSeconds % 3600) / 60

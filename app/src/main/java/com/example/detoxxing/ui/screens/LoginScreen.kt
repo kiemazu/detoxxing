@@ -26,15 +26,15 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
 
-    // Подписываемся на состояния из ViewModel
+
     val isLoading by authViewModel.isLoading.collectAsState()
     val errorMessage by authViewModel.errorMessage.collectAsState()
     val loginSuccess by authViewModel.loginSuccess.collectAsState()
 
-    // Слушаем успешный вход
+
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) {
-            onLoginSuccess() // <-- ВЫЗЫВАЕМ ЛЯМБДУ ЗДЕСЬ
+            onLoginSuccess()
         }
     }
 
@@ -61,7 +61,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
         Spacer(Modifier.height(24.dp))
 
         Button(
-            onClick = { authViewModel.login(username, password) }, // Вызываем функцию ViewModel
+            onClick = { authViewModel.login(username, password) },
             enabled = !isLoading,
             colors = ButtonDefaults.buttonColors(containerColor = TextWhite, contentColor = Color.Black),
             shape = RoundedCornerShape(10.dp),

@@ -38,7 +38,7 @@ fun AppNavigation() {
             LoginScreen(
                 navController = navController,
                 onLoginSuccess = {
-                    // При успехе чистим стек и идем на главный экран
+
                     navController.navigate("dashboard") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -61,7 +61,6 @@ fun AppNavigation() {
             var username by remember { mutableStateOf("") }
             LaunchedEffect(Unit) { username = fetchUsername() ?: "user" }
 
-            // Передаем новый контейнер
             MainScreen(username = username, mainNavController = navController)
         }
 

@@ -35,7 +35,6 @@ fun ProfileScreen(username: String, navController: NavController) {
             .fillMaxSize()
             .background(DarkBackground)
     ) {
-        // ВЕРХНЯЯ ПАНЕЛЬ (только для иконки выхода)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,14 +63,14 @@ fun ProfileScreen(username: String, navController: NavController) {
             }
         }
 
-        // ЦЕНТРАЛЬНАЯ ЧАСТЬ С ПРОФИЛЕМ (теперь она строго по центру)
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)// Занимает все свободное место
+                .weight(1f)
                 .padding(bottom = 500.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center // Центрируем по вертикали
+            verticalArrangement = Arrangement.Center
         ) {
             // Аватар с плюсиком
             Box(contentAlignment = Alignment.BottomEnd) {

@@ -58,8 +58,6 @@ class DetoxViewModel : ViewModel() {
                 _isSessionActive.value = true
                 _timeInSeconds.value = 0
 
-                // ВОТ ГЛАВНОЕ ИСПРАВЛЕНИЕ:
-                // Запускаем таймер в отдельной корутине, чтобы он не блокировал finally
                 launch {
                     runTimer()
                 }
@@ -83,10 +81,9 @@ class DetoxViewModel : ViewModel() {
 
     fun finishDetox() {
         val sessionId = currentSessionId ?: return
-        val earnedPoints = _timeInSeconds.value // 1 секунда = 1 балл (для теста)
+        val earnedPoints = _timeInSeconds.value
 
-        _isSessionActive.value = false // Останавливаем таймер
-
+        _isSessionActive.value = false
         viewModelScope.launch {
             try {
                 supabase.from("detox_session").update({
@@ -106,11 +103,10 @@ class DetoxViewModel : ViewModel() {
     }
     override fun onCleared() {
         super.onCleared()
-        // Если приложение закрывается, а сессия была активна —
-        // принудительно завершаем её в базе.
+
         val sessionId = currentSessionId
         if (_isSessionActive.value && sessionId != null) {
-            // Используем GlobalScope, чтобы запрос ушел, даже если ViewModel умирает
+
             kotlinx.coroutines.GlobalScope.launch {
                 try {
                     supabase.from("detox_session").update({
@@ -120,7 +116,7 @@ class DetoxViewModel : ViewModel() {
                         filter { eq("session_id", sessionId) }
                     }
                 } catch (e: Exception) {
-                    // Игнорируем ошибку, так как приложение уже закрывается
+
                     println("Не удалось сохранить сессию при выходе: ${e.message}")
                 }
             }
