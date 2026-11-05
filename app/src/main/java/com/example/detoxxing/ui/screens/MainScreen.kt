@@ -2,9 +2,7 @@ package com.example.detoxxing.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,53 +19,49 @@ fun MainScreen(username: String, mainNavController: NavController) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = DarkBackground,
-                contentColor = TextWhite
-            ) {
+            NavigationBar(containerColor = DarkBackground, contentColor = TextWhite) {
+                // 0. SESSION
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Timer, contentDescription = "Session") },
-                    label = { Text("session", fontSize = 12.sp) },
+                    label = { Text("session", fontSize = 11.sp) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = TextWhite, selectedTextColor = TextWhite,
-                        unselectedIconColor = TextGray, unselectedTextColor = TextGray,
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = TextWhite, selectedTextColor = TextWhite, unselectedIconColor = TextGray, unselectedTextColor = TextGray, indicatorColor = Color.Transparent)
                 )
+                // 1. STATS
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Apps, contentDescription = "Blocked apps") },
-                    label = { Text("blocked apps", fontSize = 12.sp) },
+                    icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
+                    label = { Text("stats", fontSize = 11.sp) },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = TextWhite, selectedTextColor = TextWhite,
-                        unselectedIconColor = TextGray, unselectedTextColor = TextGray,
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = TextWhite, selectedTextColor = TextWhite, unselectedIconColor = TextGray, unselectedTextColor = TextGray, indicatorColor = Color.Transparent)
                 )
+                // 2. APPS
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("profile", fontSize = 12.sp) },
+                    icon = { Icon(Icons.Default.Apps, contentDescription = "Apps") },
+                    label = { Text("apps", fontSize = 11.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = TextWhite, selectedTextColor = TextWhite,
-                        unselectedIconColor = TextGray, unselectedTextColor = TextGray,
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = TextWhite, selectedTextColor = TextWhite, unselectedIconColor = TextGray, unselectedTextColor = TextGray, indicatorColor = Color.Transparent)
+                )
+                // 3. PROFILE
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                    label = { Text("profile", fontSize = 11.sp) },
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = TextWhite, selectedTextColor = TextWhite, unselectedIconColor = TextGray, unselectedTextColor = TextGray, indicatorColor = Color.Transparent)
                 )
             }
         }
     ) { paddingValues ->
         Modifier.padding(paddingValues)
 
-
         when (selectedTab) {
             0 -> DashboardScreen(username = username, navController = mainNavController)
-            1 -> BlockedAppsScreen()
-            2 -> ProfileScreen(username = username, navController = mainNavController) // Профиль теперь 2
+            1 -> StatsScreen()
+            2 -> BlockedAppsScreen()
+            3 -> ProfileScreen(username = username, navController = mainNavController)
         }
     }
 }

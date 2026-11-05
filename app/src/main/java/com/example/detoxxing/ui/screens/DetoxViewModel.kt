@@ -72,13 +72,6 @@ class DetoxViewModel : ViewModel() {
         }
     }
 
-    private suspend fun runTimer() {
-        while (_isSessionActive.value) {
-            delay(1000L)
-            _timeInSeconds.value += 1
-        }
-    }
-
     fun finishDetox() {
         val sessionId = currentSessionId ?: return
         val earnedPoints = _timeInSeconds.value / 60
@@ -101,6 +94,13 @@ class DetoxViewModel : ViewModel() {
             }
         }
     }
+    private suspend fun runTimer() {
+        while (_isSessionActive.value) {
+            delay(1000L)
+            _timeInSeconds.value += 1
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
 
