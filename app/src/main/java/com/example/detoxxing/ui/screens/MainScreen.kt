@@ -2,6 +2,7 @@ package com.example.detoxxing.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
@@ -16,7 +17,6 @@ import com.example.detoxxing.ui.theme.TextWhite
 
 @Composable
 fun MainScreen(username: String, mainNavController: NavController) {
-    // 0 - Session, 1 - Profile (по умолчанию открываем Session)
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Scaffold(
@@ -33,14 +33,25 @@ fun MainScreen(username: String, mainNavController: NavController) {
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = TextWhite, selectedTextColor = TextWhite,
                         unselectedIconColor = TextGray, unselectedTextColor = TextGray,
-                        indicatorColor = Color.Transparent // Убираем серый овал при нажатии
+                        indicatorColor = Color.Transparent
+                    )
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Apps, contentDescription = "Blocked apps") },
+                    label = { Text("blocked apps", fontSize = 12.sp) },
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = TextWhite, selectedTextColor = TextWhite,
+                        unselectedIconColor = TextGray, unselectedTextColor = TextGray,
+                        indicatorColor = Color.Transparent
                     )
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                     label = { Text("profile", fontSize = 12.sp) },
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = TextWhite, selectedTextColor = TextWhite,
                         unselectedIconColor = TextGray, unselectedTextColor = TextGray,
@@ -55,7 +66,8 @@ fun MainScreen(username: String, mainNavController: NavController) {
 
         when (selectedTab) {
             0 -> DashboardScreen(username = username, navController = mainNavController)
-            1 -> ProfileScreen(username = username, navController = mainNavController)
+            1 -> BlockedAppsScreen()
+            2 -> ProfileScreen(username = username, navController = mainNavController) // Профиль теперь 2
         }
     }
 }

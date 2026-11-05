@@ -39,7 +39,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
     }
 
     Column(Modifier.fillMaxSize().background(DarkBackground).verticalScroll(rememberScrollState()).padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.height(60.dp))
+        Spacer(Modifier.height(170.dp))
         Text("Log In", color = TextWhite, fontSize = 32.sp, fontWeight = FontWeight.Light)
         Spacer(Modifier.height(60.dp))
 

@@ -12,8 +12,11 @@ val supabase = createSupabaseClient(
     supabaseUrl = "https://bjjqgfxqxzkxkgwdllik.supabase.co",
     supabaseKey = "sb_publishable_45rpFpqce4puNSYTs_OuqQ_gMt3FHIg"
 ) {
-    install(Auth)
+    install(Auth) {
+        alwaysAutoRefresh = true
+    }
     install(Postgrest)
+
 }
 
 @Serializable

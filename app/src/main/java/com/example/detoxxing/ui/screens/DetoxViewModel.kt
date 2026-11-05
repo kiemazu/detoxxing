@@ -81,9 +81,9 @@ class DetoxViewModel : ViewModel() {
 
     fun finishDetox() {
         val sessionId = currentSessionId ?: return
-        val earnedPoints = _timeInSeconds.value
-
+        val earnedPoints = _timeInSeconds.value / 60
         _isSessionActive.value = false
+
         viewModelScope.launch {
             try {
                 supabase.from("detox_session").update({
