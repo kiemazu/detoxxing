@@ -57,6 +57,20 @@ fun DashboardScreen(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        detoxViewModel.restoreActiveSession {
+            val serviceIntent = Intent(
+                context,
+                AppBlockerService::class.java
+            )
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent)
+            } else {
+                context.startService(serviceIntent)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -105,16 +119,25 @@ fun DashboardScreen(
 
         Button(
             onClick = {
-                if (isActive) {
-                    detoxViewModel.finishDetox()
-                } else {
-                    detoxViewModel.startDetox()
 
-                    val serviceIntent = Intent(context, AppBlockerService::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(serviceIntent)
-                    } else {
-                        context.startService(serviceIntent)
+                if (isActive) {
+                    detoxViewModel.finishDetox {
+                        context.stopService(
+                            Intent(context, AppBlockerService::class.java)
+                        )
+                    }
+                } else {
+                    detoxViewModel.startDetox {
+                        val serviceIntent = Intent(
+                            context,
+                            AppBlockerService::class.java
+                        )
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            context.startForegroundService(serviceIntent)
+                        } else {
+                            context.startService(serviceIntent)
+                        }
                     }
                 }
             },

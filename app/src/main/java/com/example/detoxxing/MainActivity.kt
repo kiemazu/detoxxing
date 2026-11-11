@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.detoxxing.services.AppBlockerService
 import com.example.detoxxing.ui.screens.*
 import com.example.detoxxing.ui.theme.DarkBackground
 import com.example.detoxxing.ui.theme.KkTheme
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation() {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
 
@@ -50,10 +52,22 @@ fun AppNavigation() {
                 }
 
                 if (currentUser != null) {
+                    val intent = android.content.Intent(
+                        context,
+                        AppBlockerService::class.java
+                    )
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        context.startForegroundService(intent)
+                    } else {
+                        context.startService(intent)
+                    }
+
                     navController.navigate("dashboard") {
                         popUpTo("splash") { inclusive = true }
                     }
-                } else {
+                }
+                else {
                     navController.navigate("login") {
                         popUpTo("splash") { inclusive = true }
                     }

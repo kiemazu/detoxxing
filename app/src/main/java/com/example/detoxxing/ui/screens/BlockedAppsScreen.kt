@@ -1,5 +1,6 @@
 package com.example.detoxxing.ui.screens
 
+import kotlinx.coroutines.delay
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
@@ -35,10 +36,15 @@ fun BlockedAppsScreen(appsViewModel: AppsViewModel = viewModel()) {
     val context = LocalContext.current
     val allApps by appsViewModel.installedApps.collectAsState()
     val isLoading by appsViewModel.isLoading.collectAsState()
+    val dailyLimits by appsViewModel.dailyLimits.collectAsState()
+
+    val remainingTime by appsViewModel.remainingTimeSeconds.collectAsState()
 
     val blockedApps = allApps.filter { it.isBlocked }
     var showAddDialog by remember { mutableStateOf(false) }
-
+    var selectedAppForLimit by remember {
+        mutableStateOf<InstalledApp?>(null)
+    }
     val hasOverlayPermission = Settings.canDrawOverlays(context)
     val hasUsagePermission = checkUsageStatsPermission(context)
 
@@ -46,6 +52,13 @@ fun BlockedAppsScreen(appsViewModel: AppsViewModel = viewModel()) {
 
     LaunchedEffect(Unit) {
         appsViewModel.loadApps(context)
+        appsViewModel.loadDailyLimits()
+    }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(10_000)
+            appsViewModel.loadDailyLimits()
+        }
     }
 
     if (showPermissionDialog) {
@@ -126,12 +139,42 @@ fun BlockedAppsScreen(appsViewModel: AppsViewModel = viewModel()) {
                                     .background(Color.White, RoundedCornerShape(8.dp))
                             )
                             Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = app.appName,
-                                color = TextWhite,
-                                fontSize = 16.sp,
-                                modifier = Modifier.weight(1f)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        selectedAppForLimit = app
+                                    }
+                            ) {
+                                Text(
+                                    text = app.appName,
+                                    color = TextWhite,
+                                    fontSize = 16.sp
+                                )
+
+
+                                val limit = dailyLimits[app.packageName]
+                                val remaining = remainingTime[app.packageName] ?: 0L
+
+                                Text(
+                                    text = if (limit != null) {
+                                        if (remaining == 0L) {
+                                            "Дневной лимит исчерпан"
+                                        } else {
+                                            "Осталось: ${formatRemainingTime(remaining)}\nЛимит: $limit мин."
+                                        }
+                                    } else {
+                                        "Нажмите, чтобы установить лимит"
+                                    },
+                                    color = if (limit != null && remaining == 0L) {
+                                        Color(0xFFFF6B6B)
+                                    } else {
+                                        TextGray
+                                    },
+                                    fontSize = 11.sp
+                                )
+
+                            }
                             IconButton(onClick = { appsViewModel.removeAppBlock(app) }) {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
@@ -221,6 +264,95 @@ fun BlockedAppsScreen(appsViewModel: AppsViewModel = viewModel()) {
                 }
             }
         )
+    }
+    if (selectedAppForLimit != null) {
+        var limitText by remember(selectedAppForLimit) {
+            mutableStateOf(
+                dailyLimits[selectedAppForLimit!!.packageName]?.toString() ?: "60"
+            )
+        }
+
+        AlertDialog(
+            onDismissRequest = {
+                selectedAppForLimit = null
+            },
+            containerColor = Color(0xFF2C2C2C),
+            title = {
+                Text(
+                    "Дневной лимит",
+                    color = TextWhite
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = selectedAppForLimit!!.appName,
+                        color = TextGray
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = limitText,
+                        onValueChange = {
+                            if (it.all { char -> char.isDigit() }) {
+                                limitText = it
+                            }
+                        },
+                        label = {
+                            Text("Минут в день")
+                        },
+                        singleLine = true
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        "Например: 60 — один час в день",
+                        color = TextGray,
+                        fontSize = 12.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val minutes = limitText.toLongOrNull()
+
+                        if (minutes != null && minutes > 0) {
+                            appsViewModel.saveDailyLimit(
+                                selectedAppForLimit!!,
+                                minutes
+                            )
+                            selectedAppForLimit = null
+                        }
+                    }
+                ) {
+                    Text("Сохранить", color = TextWhite)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        selectedAppForLimit = null
+                    }
+                ) {
+                    Text("Отмена", color = TextGray)
+                }
+            }
+        )
+    }
+}
+
+fun formatRemainingTime(seconds: Long): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val secs = seconds % 60
+
+    return when {
+        hours > 0 -> "$hours ч. $minutes мин."
+        minutes > 0 -> "$minutes мин. $secs сек."
+        else -> "$secs сек."
     }
 }
 
